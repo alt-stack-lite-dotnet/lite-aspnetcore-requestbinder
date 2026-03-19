@@ -1,0 +1,52 @@
+name: Publish Packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tag commit is in release branch
+        run: |
+          if git branch -r --contains "${GITHUB_SHA}" | grep -Eq "origin/release/"; then
+            echo "Tag commit is in release branch."
+          else
+            echo "Tag commit is NOT in release/* branch. Skipping publish."
+            exit 1
+          fi
+        working-directory: Lite.AspNetCore.RequestBinder
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: Lite.AspNetCore.RequestBinder
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+        working-directory: Lite.AspNetCore.RequestBinder
+
+      - name: Pack core and body packages
+        run: |
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder/Lite.AspNetCore.RequestBinder.csproj" -c Release --no-build -o ./nupkg
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Json/Lite.AspNetCore.RequestBinder.Body.Json.csproj" -c Release --no-build -o ./nupkg
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Xml/Lite.AspNetCore.RequestBinder.Body.Xml.csproj" -c Release --no-build -o ./nupkg
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MessagePack/Lite.AspNetCore.RequestBinder.Body.MessagePack.csproj" -c Release --no-build -o ./nupkg
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MemoryPack/Lite.AspNetCore.RequestBinder.Body.MemoryPack.csproj" -c Release --no-build -o ./nupkg
+        working-directory: Lite.AspNetCore.RequestBinder
+
+      - name: Push packages to NuGet
+        run: dotnet nuget push "./nupkg/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+        working-directory: Lite.AspNetCore.RequestBinder
+

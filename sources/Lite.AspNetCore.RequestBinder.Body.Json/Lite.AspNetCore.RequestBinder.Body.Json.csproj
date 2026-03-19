@@ -6,8 +6,8 @@
     <IsPackable>true</IsPackable>
 
     <PackageId>Lite.AspNetCore.RequestBinder.Body.Json</PackageId>
-    <Version>0.9.0-alpha</Version>
-    <PackageVersion>0.9.0-alpha</PackageVersion>
+    <Version>0.9.0-beta</Version>
+    <PackageVersion>0.9.0-beta</PackageVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>aspnetcore;request-binder;json;system.text.json</PackageTags>
   </PropertyGroup>

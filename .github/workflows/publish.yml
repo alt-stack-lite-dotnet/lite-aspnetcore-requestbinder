@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -22,20 +22,17 @@ jobs:
             echo "Tag commit is NOT in release/* branch. Skipping publish."
             exit 1
           fi
-        working-directory: Lite.AspNetCore.RequestBinder
 
       - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
 
       - name: Restore
         run: dotnet restore
-        working-directory: Lite.AspNetCore.RequestBinder
 
       - name: Build
         run: dotnet build -c Release --no-restore
-        working-directory: Lite.AspNetCore.RequestBinder
 
       - name: Pack core and body packages
         run: |
@@ -44,9 +41,7 @@ jobs:
           dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Xml/Lite.AspNetCore.RequestBinder.Body.Xml.csproj" -c Release --no-build -o ./nupkg
           dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MessagePack/Lite.AspNetCore.RequestBinder.Body.MessagePack.csproj" -c Release --no-build -o ./nupkg
           dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MemoryPack/Lite.AspNetCore.RequestBinder.Body.MemoryPack.csproj" -c Release --no-build -o ./nupkg
-        working-directory: Lite.AspNetCore.RequestBinder
 
       - name: Push packages to NuGet
         run: dotnet nuget push "./nupkg/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
-        working-directory: Lite.AspNetCore.RequestBinder
 

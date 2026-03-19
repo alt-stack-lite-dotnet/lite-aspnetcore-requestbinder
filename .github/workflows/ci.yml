@@ -33,10 +33,10 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore test/Lite.AspNetCore.RequestBinder.Tests/Lite.AspNetCore.RequestBinder.Tests.csproj -p:TargetFramework=${{ matrix.framework }}
 
       - name: Build
-        run: dotnet build -c Release -f ${{ matrix.framework }} --no-restore
+        run: dotnet build test/Lite.AspNetCore.RequestBinder.Tests/Lite.AspNetCore.RequestBinder.Tests.csproj -c Release -f ${{ matrix.framework }} --no-restore
 
       - name: Test
-        run: dotnet test -c Release -f ${{ matrix.framework }} --no-build --verbosity normal
+        run: dotnet test test/Lite.AspNetCore.RequestBinder.Tests/Lite.AspNetCore.RequestBinder.Tests.csproj -c Release -f ${{ matrix.framework }} --no-build --verbosity normal

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+
+    <PackageId>Lite.AspNetCore.RequestBinder.Body.MemoryPack</PackageId>
+    <Version>0.9.0-alpha</Version>
+    <PackageVersion>0.9.0-alpha</PackageVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>aspnetcore;request-binder;memorypack</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MemoryPack" Version="1.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lite.AspNetCore.RequestBinder\Lite.AspNetCore.RequestBinder.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

@@ -83,6 +83,9 @@ jobs:
       - name: Restore
         run: dotnet restore Lite.AspNetCore.RequestBinder.sln
 
+      - name: Build (Release)
+        run: dotnet build Lite.AspNetCore.RequestBinder.sln -c Release --no-restore
+
       - name: Pack
         run: |
           mkdir -p nupkgs
@@ -91,6 +94,9 @@ jobs:
           dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Xml/Lite.AspNetCore.RequestBinder.Body.Xml.csproj" -c Release -o ./nupkgs -p:Version="$VER" --no-restore
           dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MessagePack/Lite.AspNetCore.RequestBinder.Body.MessagePack.csproj" -c Release -o ./nupkgs -p:Version="$VER" --no-restore
           dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MemoryPack/Lite.AspNetCore.RequestBinder.Body.MemoryPack.csproj" -c Release -o ./nupkgs -p:Version="$VER" --no-restore
+
+          echo "Packed nupkgs:"
+          ls -la nupkgs
 
           if ! compgen -G "nupkgs/*.nupkg" > /dev/null; then
             echo "::error::No .nupkg files produced."

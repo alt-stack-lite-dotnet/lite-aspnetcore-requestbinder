@@ -130,8 +130,12 @@ jobs:
           echo "Pushing nupkgs:"
           ls -la nupkgs
 
+          API_KEY="${{ secrets.NUGET_API_KEY }}"
+          echo "NuGet API key is set (${#API_KEY} chars)."
+
           for f in nupkgs/*.nupkg; do
-            dotnet nuget push "$f" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+            echo "NuGet push: $f"
+            dotnet nuget push "$f" --api-key "$API_KEY" --source "https://api.nuget.org/v3/index.json" --skip-duplicate --verbosity detailed
           done
 
       - name: Upload nupkgs (debug)

@@ -89,11 +89,11 @@ jobs:
       - name: Pack
         run: |
           mkdir -p nupkgs
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder/Lite.AspNetCore.RequestBinder.csproj" -c Release -o ./nupkgs -p:Version="$VER" --no-restore
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Json/Lite.AspNetCore.RequestBinder.Body.Json.csproj" -c Release -o ./nupkgs -p:Version="$VER" --no-restore
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Xml/Lite.AspNetCore.RequestBinder.Body.Xml.csproj" -c Release -o ./nupkgs -p:Version="$VER" --no-restore
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MessagePack/Lite.AspNetCore.RequestBinder.Body.MessagePack.csproj" -c Release -o ./nupkgs -p:Version="$VER" --no-restore
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MemoryPack/Lite.AspNetCore.RequestBinder.Body.MemoryPack.csproj" -c Release -o ./nupkgs -p:Version="$VER" --no-restore
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder/Lite.AspNetCore.RequestBinder.csproj" -c Release -o ./nupkgs -p:Version="$VER"
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Json/Lite.AspNetCore.RequestBinder.Body.Json.csproj" -c Release -o ./nupkgs -p:Version="$VER"
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Xml/Lite.AspNetCore.RequestBinder.Body.Xml.csproj" -c Release -o ./nupkgs -p:Version="$VER"
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MessagePack/Lite.AspNetCore.RequestBinder.Body.MessagePack.csproj" -c Release -o ./nupkgs -p:Version="$VER"
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MemoryPack/Lite.AspNetCore.RequestBinder.Body.MemoryPack.csproj" -c Release -o ./nupkgs -p:Version="$VER"
 
           echo "Packed nupkgs:"
           ls -la nupkgs

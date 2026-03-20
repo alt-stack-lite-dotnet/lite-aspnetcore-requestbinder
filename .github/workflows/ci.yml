@@ -105,6 +105,14 @@ jobs:
 
       - name: Push packages to NuGet
         run: |
+          if [ -z "${{ secrets.NUGET_API_KEY }}" ]; then
+            echo "::error::NUGET_API_KEY is not set in GitHub Secrets."
+            exit 1
+          fi
+
+          echo "Pushing nupkgs:"
+          ls -la nupkgs
+
           for f in nupkgs/*.nupkg; do
             dotnet nuget push "$f" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
           done

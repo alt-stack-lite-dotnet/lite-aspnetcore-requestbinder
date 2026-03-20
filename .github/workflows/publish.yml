@@ -2,28 +2,40 @@ name: Publish Packages
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'v*'
-      - 'release-*'
+    inputs:
+      tag:
+        description: "Tag name to publish (e.g. release-0.9.0-beta)"
+        required: true
+        type: string
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_BRANCH: release
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: refs/tags/${{ inputs.tag }}
 
       - name: Ensure tag commit is in release branch
         run: |
-          if git branch -r --contains "${GITHUB_SHA}" | grep -Eq "origin/release/"; then
+          if git branch -r --contains "${GITHUB_SHA}" | grep -Eq "origin/${RELEASE_BRANCH}($|/)"; then
             echo "Tag commit is in release branch."
           else
             echo "Tag commit is NOT in release/* branch. Skipping publish."
             exit 1
           fi
+
+      - name: Resolve version from tag
+        shell: bash
+        run: |
+          VER="${{ inputs.tag }}"
+          if [[ "$VER" == v* ]]; then VER="${VER#v}"; fi
+          if [[ "$VER" == release-* ]]; then VER="${VER#release-}"; fi
+          echo "VER=$VER" >> "$GITHUB_ENV"
 
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v5
@@ -31,18 +43,18 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore Lite.AspNetCore.RequestBinder.sln
 
       - name: Build
-        run: dotnet build -c Release --no-restore
+        run: dotnet build Lite.AspNetCore.RequestBinder.sln -c Release --no-restore
 
       - name: Pack core and body packages
         run: |
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder/Lite.AspNetCore.RequestBinder.csproj" -c Release --no-build -o ./nupkg
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Json/Lite.AspNetCore.RequestBinder.Body.Json.csproj" -c Release --no-build -o ./nupkg
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Xml/Lite.AspNetCore.RequestBinder.Body.Xml.csproj" -c Release --no-build -o ./nupkg
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MessagePack/Lite.AspNetCore.RequestBinder.Body.MessagePack.csproj" -c Release --no-build -o ./nupkg
-          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MemoryPack/Lite.AspNetCore.RequestBinder.Body.MemoryPack.csproj" -c Release --no-build -o ./nupkg
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder/Lite.AspNetCore.RequestBinder.csproj" -c Release --no-build -o ./nupkg -p:Version="$VER"
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Json/Lite.AspNetCore.RequestBinder.Body.Json.csproj" -c Release --no-build -o ./nupkg -p:Version="$VER"
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.Xml/Lite.AspNetCore.RequestBinder.Body.Xml.csproj" -c Release --no-build -o ./nupkg -p:Version="$VER"
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MessagePack/Lite.AspNetCore.RequestBinder.Body.MessagePack.csproj" -c Release --no-build -o ./nupkg -p:Version="$VER"
+          dotnet pack "sources/Lite.AspNetCore.RequestBinder.Body.MemoryPack/Lite.AspNetCore.RequestBinder.Body.MemoryPack.csproj" -c Release --no-build -o ./nupkg -p:Version="$VER"
 
       - name: Push packages to NuGet
         run: dotnet nuget push "./nupkg/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
